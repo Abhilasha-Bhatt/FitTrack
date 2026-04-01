@@ -1,0 +1,9 @@
+# FITTRACK — .gitignore
+.DS_Store
+Thumbs.db
+*.log
+node_modules/
+.env
+.vscode/settings.json
+*.swp
+*.swo

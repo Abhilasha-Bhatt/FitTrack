@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FITTRACK — Elite Fitness Platform</title>
+
+<!--
+  ╔══════════════════════════════════════════════════════════╗
+  ║         FITTRACK — INTEGRATED ENTRY POINT               ║
+  ║                                                          ║
+  ║  Module 1  →  module1-ui-frontend/   (Person 1)         ║
+  ║  Module 2  →  module2-health-logic/  (Person 2)         ║
+  ║  Module 3  →  module3-diet-exercise-engine/ (Person 3)  ║
+  ║  Module 4  →  module4-progress-storage/    (Person 4)   ║
+  ║  Shared    →  shared/                                    ║
+  ╚══════════════════════════════════════════════════════════╝
+
+  LOAD ORDER (important – do not change):
+    1. shared/styles.css          → Base design tokens
+    2. module1-ui-frontend/styles.css → Page layouts & UI
+    3. shared/constants.js        → Global data & state
+    4. module4-progress-storage/storage.js → Storage API + toast
+    5. module2-health-logic/health.js      → Calculations + auth
+    6. module3-diet-exercise-engine/recommendations.js → Plans
+    7. module1-ui-frontend/ui.js  → UI interactions & init
+-->
+
+<!-- ── STYLESHEETS ─────────────────────────────────────── -->
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="shared/styles.css"/>
+<link rel="stylesheet" href="module1-ui-frontend/styles.css"/>
+
+<style>
+/* ── Extra inline styles (profile, admin overview, etc.) ── */
+.profile-hero{display:flex;align-items:center;gap:20px;margin-bottom:22px;padding:22px;background:var(--card);border:1px solid var(--border);border-radius:var(--rl);}
+.prof-av{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--teal));display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:#000;flex-shrink:0;}
+.prof-name{font-size:1.2rem;font-weight:700;margin-bottom:2px;}
+.prof-email{font-size:.78rem;color:var(--text2);margin-bottom:8px;}
+.prof-tags{display:flex;gap:7px;flex-wrap:wrap;}
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.psec{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px;}
+.ps-title{font-size:.7rem;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;font-weight:700;}
+.dr{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:.82rem;}
+.dr:last-child{border-bottom:none;}
+.dk{color:var(--text2);}
+.dv{font-weight:600;}
+.dv-a{color:var(--accent);}
+.sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.sum-box{background:var(--card2);border-radius:var(--rs);padding:10px;text-align:center;}
+.sum-num{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;line-height:1;}
+.sum-lbl{font-size:.6rem;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;}
+
+/* Admin stats cards */
+.asc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:4px;}
+.asc-icon{font-size:1.4rem;margin-bottom:6px;}
+.asc-val{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--accent);line-height:1;}
+.asc-lbl{font-size:.68rem;color:var(--text2);letter-spacing:1px;text-transform:uppercase;}
+.admin-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
+
+/* Users table */
+.users-table-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.table-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border);}
+.table-search input{width:220px;padding:8px 12px;}
+#users-table{width:100%;border-collapse:collapse;}
+#users-table th{text-align:left;font-size:.66rem;color:var(--text3);letter-spacing:2px;text-transform:uppercase;padding:11px 16px;border-bottom:1px solid var(--border);font-weight:700;}
+#users-table td{padding:13px 16px;font-size:.84rem;border-bottom:1px solid var(--border);vertical-align:middle;}
+#users-table tbody tr:hover{background:var(--card2);}
+
+/* User Detail Modal (admin slide panel) */
+.udm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:2000;display:none;align-items:flex-start;justify-content:flex-end;backdrop-filter:blur(8px);}
+.udm-overlay.open{display:flex;}
+.udm-panel{width:min(520px,100vw);height:100vh;background:var(--card);border-left:1px solid var(--border2);overflow-y:auto;padding:28px;}
+.udm-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
+.udm-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:2px;}
+.udm-section{margin-bottom:22px;}
+.udm-sec-title{font-size:.68rem;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;font-weight:700;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.udm-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.udm-field{background:var(--card2);border-radius:var(--rs);padding:9px 12px;}
+.udm-key{font-size:.62rem;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px;}
+.udm-val{font-size:.84rem;font-weight:600;}
+.udm-task{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--card2);border-radius:var(--rs);margin-bottom:5px;}
+.udm-task.done{opacity:.6;}
+.udm-task-text{font-size:.82rem;font-weight:500;margin-bottom:2px;}
+.udm-task-meta{font-size:.66rem;color:var(--text2);}
+
+/* Admin Nav active fix */
+.aNav.act{background:var(--adim);color:var(--accent);border-color:rgba(200,255,0,.15);}
+
+/* Diet/Exercise rec cards container */
+#diet-rec-card, #exercise-rec-card{margin-bottom:0;}
+</style>
+</head>
+<body>
+
+<!-- ══ TOAST CONTAINER ══ -->
+<div id="toastWrap"></div>
+
+<!-- ══════════ PAGE: AUTH ══════════ -->
+<div class="page active" id="pg-auth">
+  <div class="auth-box">
+    <div class="auth-left">
+      <div>
+        <div class="logo" style="font-size:1.9rem;">FIT<span>TRACK</span></div>
+        <div class="auth-hero">TRAIN<br>HARDER.<br><em>LIVE</em><br>BETTER.</div>
+      </div>
+      <div class="feat-list">
+        <div class="feat-item"><div class="feat-dot"></div>Personalized workout plans just for you</div>
+        <div class="feat-item"><div class="feat-dot"></div>Smart diet &amp; nutrition recommendations</div>
+        <div class="feat-item"><div class="feat-dot"></div>Curated yoga &amp; exercise video library</div>
+        <div class="feat-item"><div class="feat-dot"></div>Daily planner with streak tracking</div>
+        <div class="feat-item"><div class="feat-dot"></div>Admin dashboard for full user management</div>
+      </div>
+    </div>
+    <div class="auth-right">
+      <div class="logo" style="font-size:1.7rem;">FIT<span>TRACK</span></div>
+      <div class="auth-sub">Elite Fitness Platform</div>
+
+      <!-- SIGNUP -->
+      <div id="v-signup">
+        <div class="auth-title">Create your account</div>
+        <div class="auth-desc">Start your fitness journey today — free forever.</div>
+        <div class="fg"><label>Full Name</label><input type="text" id="su-name" placeholder="Alex Johnson"/></div>
+        <div class="fg"><label>Email</label><input type="email" id="su-email" placeholder="alex@example.com"/></div>
+        <div class="fg"><label>Password</label><input type="password" id="su-pass" placeholder="Min. 6 characters"/></div>
+        <div class="fg"><label>Fitness Goal</label>
+          <select id="su-goal">
+            <option value="">Select your primary goal</option>
+            <option>Lose Weight</option><option>Build Muscle</option>
+            <option>General Fitness</option><option>Maintain</option>
+          </select>
+        </div>
+        <button class="btn btn-accent btn-full btn-lg" onclick="FT_Auth.doSignup()">CREATE ACCOUNT →</button>
+        <div class="switch-link">Already have an account? <a onclick="FT_Auth.showView('login')">Sign in</a></div>
+      </div>
+
+      <!-- LOGIN -->
+      <div id="v-login" style="display:none;">
+        <div class="admin-hint">🛡️ <span>Admin: deepshikha@fittrack.com / admin123</span></div>
+        <div class="auth-title">Welcome back</div>
+        <div class="auth-desc">Sign in to continue your journey.</div>
+        <div class="fg"><label>Email</label><input type="email" id="li-email" placeholder="your@email.com"/></div>
+        <div class="fg"><label>Password</label><input type="password" id="li-pass" placeholder="Your password"/></div>
+        <button class="btn btn-accent btn-full btn-lg" onclick="FT_Auth.doLogin()">SIGN IN →</button>
+        <div class="switch-link">New here? <a onclick="FT_Auth.showView('signup')">Create an account</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PAGE: ONBOARDING ══════════ -->
+<div class="page" id="pg-onboard">
+  <div class="ob-hdr">
+    <div class="logo" style="font-size:1.3rem;">FIT<span>TRACK</span></div>
+    <div class="ob-steps">
+      <div class="ob-step act" id="obs-1"><div class="ob-snum">1</div><span>Body Stats</span></div>
+      <div class="ob-sep"></div>
+      <div class="ob-step" id="obs-2"><div class="ob-snum">2</div><span>Health</span></div>
+      <div class="ob-sep"></div>
+      <div class="ob-step" id="obs-3"><div class="ob-snum">3</div><span>Preferences</span></div>
+      <div class="ob-sep"></div>
+      <div class="ob-step" id="obs-4"><div class="ob-snum">4</div><span>Schedule</span></div>
+    </div>
+    <button class="btn btn-ghost" style="font-size:.76rem;padding:7px 14px;" onclick="FT_Auth.finishOnboard()">Skip →</button>
+  </div>
+  <div class="ob-body">
+    <!-- Step 1: Body Stats -->
+    <div class="ob-sec act" id="obs-sec-1">
+      <div class="sec-num">01 / 04</div><div class="sec-title">YOUR BODY STATS</div>
+      <div class="sec-desc">Help us personalize your experience with accurate health data.</div>
+      <div class="r2">
+        <div class="fg"><label>Age</label><input type="number" id="ob-age" placeholder="25" min="10" max="100"/></div>
+        <div class="fg"><label>Gender</label><select id="ob-gender"><option value="">Select</option><option>Male</option><option>Female</option><option>Non-binary</option><option>Prefer not to say</option></select></div>
+      </div>
+      <div class="r2">
+        <div class="fg"><label>Height (cm)</label><input type="number" id="ob-height" placeholder="175"/></div>
+        <div class="fg"><label>Weight (kg)</label><input type="number" id="ob-weight" placeholder="70"/></div>
+      </div>
+      <div class="r2">
+        <div class="fg"><label>Target Weight (kg)</label><input type="number" id="ob-tweight" placeholder="65"/></div>
+        <div class="fg"><label>Activity Level</label>
+          <select id="ob-activity">
+            <option value="">Select</option>
+            <option>Sedentary</option><option>Lightly Active</option>
+            <option>Moderately Active</option><option>Very Active</option><option>Extremely Active</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Health Info -->
+    <div class="ob-sec" id="obs-sec-2">
+      <div class="sec-num">02 / 04</div><div class="sec-title">HEALTH INFORMATION</div>
+      <div class="sec-desc">Keep your workouts safe and effective with accurate health context.</div>
+      <div class="fg">
+        <label>Do you take any medications?</label>
+        <div class="med-row">
+          <div class="med-btn act" id="med-no" onclick="FT_UI.toggleMed('no')">✕ No medications</div>
+          <div class="med-btn" id="med-yes" onclick="FT_UI.toggleMed('yes')">✓ Yes, I do</div>
+        </div>
+      </div>
+      <div id="med-detail" style="display:none;">
+        <div class="fg"><label>List your medications</label><textarea id="ob-meds" rows="3" placeholder="e.g. Metformin 500mg..."></textarea></div>
+      </div>
+      <div class="fg"><label>Health conditions or injuries?</label><textarea id="ob-conditions" rows="3" placeholder="e.g. Lower back pain... (leave blank if none)"></textarea></div>
+      <div class="fg"><label>Dietary Preference</label>
+        <select id="ob-diet">
+          <option value="">Select</option><option>No restriction</option><option>Vegetarian</option>
+          <option>Vegan</option><option>Keto</option><option>Paleo</option>
+          <option>Gluten-Free</option><option>Intermittent Fasting</option>
+        </select>
+      </div>
+      <div class="fg"><label>Daily water intake target (glasses)</label><input type="number" id="ob-water" placeholder="8" min="1" max="20"/></div>
+    </div>
+
+    <!-- Step 3: Preferences -->
+    <div class="ob-sec" id="obs-sec-3">
+      <div class="sec-num">03 / 04</div><div class="sec-title">EXERCISE PREFERENCES</div>
+      <div class="sec-desc">Select all activities that interest you. We'll build your plan around them.</div>
+      <div class="pref-grid">
+        <div class="pref-card" data-pref="yoga"       onclick="FT_UI.togglePref(this)"><span class="pref-icon">🧘</span><div class="pref-name">Yoga</div><div class="pref-desc">Flexibility &amp; mindfulness</div></div>
+        <div class="pref-card" data-pref="strength"   onclick="FT_UI.togglePref(this)"><span class="pref-icon">🏋️</span><div class="pref-name">Strength Training</div><div class="pref-desc">Build muscle &amp; power</div></div>
+        <div class="pref-card" data-pref="cardio"     onclick="FT_UI.togglePref(this)"><span class="pref-icon">🏃</span><div class="pref-name">Cardio</div><div class="pref-desc">Burn fat &amp; stamina</div></div>
+        <div class="pref-card" data-pref="meditation" onclick="FT_UI.togglePref(this)"><span class="pref-icon">🌿</span><div class="pref-name">Meditation</div><div class="pref-desc">Mental clarity &amp; calm</div></div>
+        <div class="pref-card" data-pref="hiit"       onclick="FT_UI.togglePref(this)"><span class="pref-icon">⚡</span><div class="pref-name">HIIT</div><div class="pref-desc">High-intensity intervals</div></div>
+        <div class="pref-card" data-pref="pilates"    onclick="FT_UI.togglePref(this)"><span class="pref-icon">🤸</span><div class="pref-name">Pilates</div><div class="pref-desc">Core strength &amp; posture</div></div>
+        <div class="pref-card" data-pref="cycling"    onclick="FT_UI.togglePref(this)"><span class="pref-icon">🚴</span><div class="pref-name">Cycling</div><div class="pref-desc">Endurance &amp; legs</div></div>
+        <div class="pref-card" data-pref="dance"      onclick="FT_UI.togglePref(this)"><span class="pref-icon">💃</span><div class="pref-name">Dance Fitness</div><div class="pref-desc">Fun cardio workout</div></div>
+        <div class="pref-card" data-pref="stretching" onclick="FT_UI.togglePref(this)"><span class="pref-icon">🌙</span><div class="pref-name">Stretching</div><div class="pref-desc">Recovery &amp; mobility</div></div>
+      </div>
+    </div>
+
+    <!-- Step 4: Schedule -->
+    <div class="ob-sec" id="obs-sec-4">
+      <div class="sec-num">04 / 04</div><div class="sec-title">YOUR SCHEDULE</div>
+      <div class="sec-desc">Plan your workouts around your life for maximum consistency.</div>
+      <div class="fg"><label>Preferred workout time</label>
+        <div class="slot-grid">
+          <div class="slot" data-time="early"     onclick="FT_UI.selectSlot(this,'time')"><div class="sv">5–7 AM</div><div class="sl">Early Bird</div></div>
+          <div class="slot" data-time="morning"   onclick="FT_UI.selectSlot(this,'time')"><div class="sv">8–10 AM</div><div class="sl">Morning</div></div>
+          <div class="slot" data-time="afternoon" onclick="FT_UI.selectSlot(this,'time')"><div class="sv">12–2 PM</div><div class="sl">Afternoon</div></div>
+          <div class="slot" data-time="evening"   onclick="FT_UI.selectSlot(this,'time')"><div class="sv">6–9 PM</div><div class="sl">Evening</div></div>
+        </div>
+      </div>
+      <div class="fg" style="margin-top:20px;"><label>Days per week</label>
+        <div class="slot-grid" style="grid-template-columns:repeat(7,1fr);">
+          <div class="slot" data-days="1" onclick="FT_UI.selectSlot(this,'days')"><div class="sv">1</div><div class="sl">day</div></div>
+          <div class="slot" data-days="2" onclick="FT_UI.selectSlot(this,'days')"><div class="sv">2</div><div class="sl">days</div></div>
+          <div class="slot" data-days="3" onclick="FT_UI.selectSlot(this,'days')"><div class="sv">3</div><div class="sl">days</div></div>
+          <div class="slot" data-days="4" onclick="FT_UI.selectSlot(this,'days')"><div class="sv">4</div><div class="sl">days</div></div>
+          <div class="slot" data-days="5" onclick="FT_UI.selectSlot(this,'days')"><div class="sv">5</div><div class="sl">days</div></div>
+          <div class="slot" data-days="6" onclick="FT_UI.selectSlot(this,'days')"><div class="sv">6</div><div class="sl">days</div></div>
+          <div class="slot" data-days="7" onclick="FT_UI.selectSlot(this,'days')"><div class="sv">7</div><div class="sl">days</div></div>
+        </div>
+      </div>
+      <div class="fg" style="margin-top:20px;"><label>Session Duration</label>
+        <select id="ob-duration"><option>15–20 min</option><option>30 min</option><option selected>45 min</option><option>60 min</option><option>90+ min</option></select>
+      </div>
+      <div class="fg"><label>Fitness Level</label>
+        <div class="slot-grid" style="grid-template-columns:1fr 1fr 1fr;">
+          <div class="slot" data-level="Beginner"     onclick="FT_UI.selectSlot(this,'level')"><div class="sv">🌱</div><div class="sl">Beginner</div></div>
+          <div class="slot" data-level="Intermediate" onclick="FT_UI.selectSlot(this,'level')"><div class="sv">🔥</div><div class="sl">Intermediate</div></div>
+          <div class="slot" data-level="Advanced"     onclick="FT_UI.selectSlot(this,'level')"><div class="sv">⚡</div><div class="sl">Advanced</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ob-ftr">
+    <button class="btn btn-ghost" id="ob-prev" onclick="FT_UI.obPrev()" style="visibility:hidden;">← Back</button>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="prog-bar"><div class="prog-fill" id="ob-prog" style="width:25%;"></div></div>
+      <span style="font-size:.7rem;color:var(--text2);font-family:'Space Mono',monospace;" id="ob-lbl">1 / 4</span>
+    </div>
+    <button class="btn btn-accent" id="ob-next" onclick="FT_UI.obNext()">Continue →</button>
+  </div>
+</div>
+
+<!-- ══════════ PAGE: USER DASHBOARD ══════════ -->
+<div class="page" id="pg-dash">
+  <div class="dash-layout">
+    <div class="sidebar">
+      <div class="sb-logo"><div class="logo" style="font-size:1.45rem;">FIT<span>TRACK</span></div></div>
+      <div class="sb-user">
+        <div class="av" id="sb-av">A</div>
+        <div><div class="sb-uname" id="sb-uname">User</div><div class="sb-role" style="color:var(--accent);">⚡ Member</div></div>
+      </div>
+      <div class="nav-sec">
+        <div class="nav-lbl">Main</div>
+        <div class="nav-item act" id="n-overview" onclick="FT_Storage.switchTab('overview')"><span class="nav-icon">📊</span> Overview</div>
+        <div class="nav-item" id="n-planner"  onclick="FT_Storage.switchTab('planner')"><span class="nav-icon">📅</span> Daily Planner <span class="nav-badge" id="task-badge">0</span></div>
+        <div class="nav-item" id="n-videos"   onclick="FT_Storage.switchTab('videos')"><span class="nav-icon">▶️</span> Video Library</div>
+        <div class="nav-item" id="n-profile"  onclick="FT_Storage.switchTab('profile')"><span class="nav-icon">👤</span> My Profile</div>
+      </div>
+      <div class="nav-sec">
+        <div class="nav-lbl">Today's Activity</div>
+        <div class="nav-item" style="cursor:default;flex-direction:column;align-items:flex-start;gap:2px;">
+          <div style="font-size:.68rem;color:var(--text2);">Calories Burned</div>
+          <div style="font-size:.9rem;font-weight:700;color:var(--accent);font-family:'Space Mono',monospace;" id="sb-cals">0 kcal</div>
+        </div>
+        <div class="nav-item" style="cursor:default;flex-direction:column;align-items:flex-start;gap:2px;">
+          <div style="font-size:.68rem;color:var(--text2);">Tasks Done Today</div>
+          <div style="font-size:.9rem;font-weight:700;color:var(--teal);font-family:'Space Mono',monospace;" id="sb-done">0 / 0</div>
+        </div>
+      </div>
+      <div class="sb-bottom">
+        <div class="streak-widget">
+          <div class="stk-num" id="sb-streak">0</div>
+          <div class="stk-lbl">Day Streak</div>
+          <div style="font-size:1rem;margin-top:3px;" id="sb-flames">🔥</div>
+        </div>
+        <div style="margin-top:9px;">
+          <div class="nav-item" onclick="FT_Auth.doLogout()" style="color:var(--text3);"><span class="nav-icon">↩</span> Sign Out</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-main">
+      <div class="topbar">
+        <div class="topbar-title" id="topbar-title">OVERVIEW</div>
+        <div class="topbar-right">
+          <div class="top-date" id="top-date"></div>
+          <div class="av" id="top-av" style="width:30px;height:30px;font-size:.74rem;cursor:pointer;" onclick="FT_Storage.switchTab('profile')">A</div>
+        </div>
+      </div>
+
+      <!-- OVERVIEW TAB -->
+      <div class="dash-tab act" id="tab-overview">
+        <div class="welcome-banner">
+          <div>
+            <div class="wb-greet" id="wb-greet">Good morning 👋</div>
+            <div class="wb-name"><em id="wb-name">User</em>, let's crush it!</div>
+            <div class="wb-sub">Keep going — every day counts!</div>
+          </div>
+          <div>
+            <div class="wb-big" id="wb-streak">0</div>
+            <div class="wb-small">Day Streak 🔥</div>
+          </div>
+        </div>
+        <div class="stats-grid">
+          <div class="sc"><div class="sc-head"><div class="sc-icon si-g">🔥</div><div class="sc-trend" id="stat-cals-trend">—</div></div><div class="sc-val" id="stat-cals">0</div><div class="sc-lbl">Calories Burned</div></div>
+          <div class="sc"><div class="sc-head"><div class="sc-icon si-t">✅</div><div class="sc-trend" id="stat-tasks-trend">—</div></div><div class="sc-val" id="stat-tasks">0</div><div class="sc-lbl">Tasks Completed</div></div>
+          <div class="sc"><div class="sc-head"><div class="sc-icon si-o">🔥</div><div class="sc-trend">streak</div></div><div class="sc-val" id="stat-streak">0</div><div class="sc-lbl">Day Streak</div></div>
+          <div class="sc"><div class="sc-head"><div class="sc-icon si-r">📅</div><div class="sc-trend">total</div></div><div class="sc-val" id="stat-logins">0</div><div class="sc-lbl">Days Logged In</div></div>
+        </div>
+        <div class="dash-row">
+          <div class="panel">
+            <div class="panel-head"><div><div class="panel-title">Weekly Activity</div><div class="panel-sub">Tasks completed per day</div></div><div class="panel-badge">THIS WEEK</div></div>
+            <div class="bar-chart" id="bar-chart"></div>
+            <div style="font-size:.7rem;color:var(--teal);" id="bar-note">Track your weekly progress</div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><div><div class="panel-title">Workout Split</div></div></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+              <div class="ring-container">
+                <svg width="120" height="120" viewBox="0 0 120 120">
+                  <circle cx="60" cy="60" r="48" fill="none" stroke="var(--card3)" stroke-width="13"/>
+                  <circle cx="60" cy="60" r="48" fill="none" stroke="var(--accent)" stroke-width="13" stroke-dasharray="90 201" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+                  <circle cx="60" cy="60" r="48" fill="none" stroke="var(--teal)" stroke-width="13" stroke-dasharray="67 201" stroke-dashoffset="-90" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+                  <circle cx="60" cy="60" r="48" fill="none" stroke="var(--orange)" stroke-width="13" stroke-dasharray="44 201" stroke-dashoffset="-157" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+                </svg>
+                <div class="ring-center"><div class="ring-val" id="ring-sessions">0</div><div class="ring-lbl">Tasks</div></div>
+              </div>
+              <div style="width:100%;">
+                <div class="legend-row"><div class="legend-left"><div class="ldot" style="background:var(--accent);"></div>Workout</div><div style="font-family:'Space Mono',monospace;font-size:.73rem;color:var(--accent);">45%</div></div>
+                <div class="legend-row"><div class="legend-left"><div class="ldot" style="background:var(--teal);"></div>Meal</div><div style="font-family:'Space Mono',monospace;font-size:.73rem;color:var(--teal);">33%</div></div>
+                <div class="legend-row"><div class="legend-left"><div class="ldot" style="background:var(--orange);"></div>Other</div><div style="font-family:'Space Mono',monospace;font-size:.73rem;color:var(--orange);">22%</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="metrics-grid">
+          <div class="mc"><div class="mc-icon">⚖️</div><div class="mc-val" id="m-weight">—</div><div class="mc-lbl">Current Weight</div><div class="mc-note mn-g">Set in profile</div></div>
+          <div class="mc"><div class="mc-icon">📏</div><div class="mc-val" id="m-bmi">—</div><div class="mc-lbl">BMI Index</div><div class="mc-note mn-g">Set in profile</div></div>
+          <div class="mc"><div class="mc-icon">💪</div><div class="mc-val" id="m-progress">0%</div><div class="mc-lbl">Weekly Goal</div><div class="mc-note mn-o">Complete tasks daily</div></div>
+        </div>
+        <!-- Diet & Exercise Recommendations — rendered by Module 3 -->
+        <div class="dash-row" style="margin-bottom:20px;">
+          <div id="diet-rec-card"></div>
+          <div id="exercise-rec-card"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><div><div class="panel-title">Login Activity Calendar</div><div class="panel-sub">Green = active day</div></div><div class="panel-badge" id="cal-badge">🔥 0 DAY STREAK</div></div>
+          <div class="cal-month-lbl" id="cal-month"></div>
+          <div class="cal-grid" id="cal-grid"></div>
+        </div>
+      </div>
+
+      <!-- PLANNER TAB -->
+      <div class="dash-tab" id="tab-planner">
+        <div style="margin-bottom:16px;"><div style="font-size:1rem;font-weight:700;margin-bottom:3px;">Daily Planner</div><div style="font-size:.82rem;color:var(--text2);">Organize your day. Completed tasks count toward your streak!</div></div>
+        <div class="day-tabs" id="day-tabs"></div>
+        <div class="planner-layout">
+          <div class="planner-form">
+            <div style="font-size:.88rem;font-weight:700;margin-bottom:14px;">➕ Add Task</div>
+            <div class="fg"><label>Task</label><input type="text" id="task-input" placeholder="e.g. Morning yoga session" maxlength="80"/></div>
+            <div class="fg"><label>Category</label>
+              <select id="task-cat">
+                <option value="workout">💪 Workout</option><option value="meal">🥗 Meal</option>
+                <option value="rest">😴 Rest / Recovery</option><option value="other">📝 Other</option>
+              </select>
+            </div>
+            <div class="r2">
+              <div class="fg"><label>Time</label><input type="time" id="task-time" value="07:00"/></div>
+              <div class="fg"><label>Duration</label><select id="task-dur"><option>15 min</option><option>30 min</option><option selected>45 min</option><option>60 min</option><option>90 min</option></select></div>
+            </div>
+            <div class="fg"><label>Notes</label><textarea id="task-note" rows="2" placeholder="Extra details..."></textarea></div>
+            <button class="btn btn-accent btn-full" onclick="FT_Storage.addTask()">ADD TO PLANNER ✓</button>
+            <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);">
+              <div style="font-size:.68rem;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:9px;">Today's Summary</div>
+              <div class="sum-grid">
+                <div class="sum-box"><div class="sum-num" id="sum-total" style="color:var(--accent);">0</div><div class="sum-lbl">TASKS</div></div>
+                <div class="sum-box"><div class="sum-num" id="sum-done" style="color:var(--teal);">0</div><div class="sum-lbl">DONE</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="planner-list">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+              <div style="font-size:.88rem;font-weight:700;" id="task-list-title">Tasks</div>
+              <button class="btn btn-ghost" style="font-size:.7rem;padding:5px 11px;" onclick="FT_Storage.clearDay()">Clear Day</button>
+            </div>
+            <div id="task-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIDEOS TAB -->
+      <div class="dash-tab" id="tab-videos">
+        <div style="margin-bottom:16px;"><div style="font-size:1rem;font-weight:700;margin-bottom:3px;">Video Library</div><div style="font-size:.82rem;color:var(--text2);">Curated yoga &amp; exercise videos.</div></div>
+        <div class="filter-bar">
+          <div class="fbtn act" data-filter="all"        onclick="FT_UI.filterVids(this)">All</div>
+          <div class="fbtn" data-filter="yoga"           onclick="FT_UI.filterVids(this)">🧘 Yoga</div>
+          <div class="fbtn" data-filter="exercise"       onclick="FT_UI.filterVids(this)">💪 Exercise</div>
+          <div class="fbtn" data-filter="meditation"     onclick="FT_UI.filterVids(this)">🌿 Meditation</div>
+          <div class="fbtn" data-filter="strength"       onclick="FT_UI.filterVids(this)">🏋️ Strength</div>
+        </div>
+        <div class="video-grid" id="video-grid"></div>
+      </div>
+
+      <!-- PROFILE TAB -->
+      <div class="dash-tab" id="tab-profile">
+        <div class="profile-hero">
+          <div class="prof-av" id="prof-av">A</div>
+          <div>
+            <div class="prof-name" id="prof-name">User</div>
+            <div class="prof-email" id="prof-email">email</div>
+            <div class="prof-tags">
+              <span class="badge badge-green"  id="prof-goal">Fitness</span>
+              <span class="badge badge-teal"   id="prof-level">Beginner</span>
+              <span class="badge badge-orange">Member</span>
+            </div>
+          </div>
+        </div>
+        <div class="profile-grid">
+          <div class="psec"><div class="ps-title">Body Stats</div>
+            <div class="dr"><span class="dk">Height</span><span class="dv dv-a" id="p-height">—</span></div>
+            <div class="dr"><span class="dk">Weight</span><span class="dv dv-a" id="p-weight">—</span></div>
+            <div class="dr"><span class="dk">Target Weight</span><span class="dv" id="p-tweight">—</span></div>
+            <div class="dr"><span class="dk">BMI</span><span class="dv dv-a" id="p-bmi">—</span></div>
+            <div class="dr"><span class="dk">Age</span><span class="dv" id="p-age">—</span></div>
+            <div class="dr"><span class="dk">Activity Level</span><span class="dv" id="p-activity">—</span></div>
+          </div>
+          <div class="psec"><div class="ps-title">Health Info</div>
+            <div class="dr"><span class="dk">Medications</span><span class="dv" id="p-meds">None</span></div>
+            <div class="dr"><span class="dk">Diet Preference</span><span class="dv" id="p-diet">—</span></div>
+            <div class="dr"><span class="dk">Water Goal</span><span class="dv" id="p-water">—</span></div>
+            <div class="dr"><span class="dk">Conditions</span><span class="dv" id="p-conditions">None</span></div>
+          </div>
+          <div class="psec"><div class="ps-title">Workout Preferences</div>
+            <div class="dr"><span class="dk">Interests</span><span class="dv" id="p-prefs" style="max-width:150px;text-align:right;font-size:.72rem;white-space:normal;">—</span></div>
+            <div class="dr"><span class="dk">Workout Time</span><span class="dv" id="p-time">—</span></div>
+            <div class="dr"><span class="dk">Days/Week</span><span class="dv dv-a" id="p-days">—</span></div>
+            <div class="dr"><span class="dk">Session Duration</span><span class="dv" id="p-duration">—</span></div>
+          </div>
+          <div class="psec"><div class="ps-title">Activity Stats</div>
+            <div class="dr"><span class="dk">Current Streak</span><span class="dv dv-a">🔥 <span id="p-streak">0</span> days</span></div>
+            <div class="dr"><span class="dk">Total Logins</span><span class="dv dv-a" id="p-logins">0</span></div>
+            <div class="dr"><span class="dk">Tasks Completed</span><span class="dv dv-a" id="p-tasks-done">0</span></div>
+            <div class="dr"><span class="dk">Member Since</span><span class="dv" id="p-since">—</span></div>
+          </div>
+        </div>
+        <div style="margin-top:14px;"><button class="btn btn-ghost" onclick="FT_Auth.doLogout()">↩ Sign Out</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PAGE: ADMIN DASHBOARD ══════════ -->
+<div class="page" id="pg-admin">
+  <div class="admin-layout">
+    <div class="admin-sidebar">
+      <div class="admin-logo-bar">
+        <div class="logo" style="font-size:1.45rem;">FIT<span>TRACK</span></div>
+        <div class="admin-badge">🛡️ ADMIN</div>
+      </div>
+      <div class="sb-user">
+        <div class="av" style="background:linear-gradient(135deg,var(--purple),var(--teal));">D</div>
+        <div><div class="sb-uname">Deepshikha</div><div class="sb-role" style="color:var(--purple);">🛡️ Administrator</div></div>
+      </div>
+      <div class="nav-sec">
+        <div class="nav-lbl">Admin Panel</div>
+        <div class="nav-item aNav act" id="an-overview"  onclick="FT_Storage.switchAdminTab('overview')"><span class="nav-icon">📊</span> Dashboard</div>
+        <div class="nav-item aNav" id="an-users"         onclick="FT_Storage.switchAdminTab('users')"><span class="nav-icon">👥</span> Manage Users <span class="nav-badge" id="user-count-badge">0</span></div>
+        <div class="nav-item aNav" id="an-progress"      onclick="FT_Storage.switchAdminTab('progress');FT_Storage.renderProgress()"><span class="nav-icon">📈</span> User Progress</div>
+        <div class="nav-item aNav" id="an-activity"      onclick="FT_Storage.switchAdminTab('activity');FT_Storage.renderActivity()"><span class="nav-icon">🔥</span> Streaks &amp; Activity</div>
+      </div>
+      <div class="sb-bottom">
+        <div style="background:var(--pdim);border:1px solid rgba(168,85,247,.2);border-radius:var(--r);padding:13px 15px;margin-bottom:10px;">
+          <div style="font-size:.68rem;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Logged in as</div>
+          <div style="font-size:.84rem;font-weight:700;color:var(--purple);">Deepshikha</div>
+          <div style="font-size:.7rem;color:var(--text2);">Administrator</div>
+        </div>
+        <div class="nav-item" onclick="FT_Auth.doLogout()" style="color:var(--text3);"><span class="nav-icon">↩</span> Sign Out</div>
+      </div>
+    </div>
+
+    <div class="admin-main">
+      <div class="admin-topbar">
+        <div class="topbar-title">ADMIN DASHBOARD</div>
+        <div class="topbar-right">
+          <div class="top-date" id="admin-top-date"></div>
+          <span class="badge badge-purple">🛡️ Admin</span>
+        </div>
+      </div>
+
+      <!-- ADMIN OVERVIEW TAB -->
+      <div class="admin-tab act" id="atab-overview">
+        <div class="admin-stats">
+          <div class="asc"><div class="asc-icon">👥</div><div class="asc-val" id="a-total">0</div><div class="asc-lbl">Total Users</div></div>
+          <div class="asc"><div class="asc-icon">✅</div><div class="asc-val" id="a-active">0</div><div class="asc-lbl">Active Accounts</div></div>
+          <div class="asc"><div class="asc-icon">🚫</div><div class="asc-val" id="a-inactive">0</div><div class="asc-lbl">Suspended</div></div>
+          <div class="asc"><div class="asc-icon">💪</div><div class="asc-val" id="a-tasks">0</div><div class="asc-lbl">Tasks Done (Total)</div></div>
+        </div>
+        <div style="margin-top:14px;padding:22px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);">
+          <div style="font-size:.84rem;font-weight:700;margin-bottom:6px;">Quick Switch</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="btn btn-ghost" onclick="FT_Storage.switchAdminTab('users');FT_Storage.renderAdminUsers()">👥 Manage Users</button>
+            <button class="btn btn-ghost" onclick="FT_Storage.switchAdminTab('progress');FT_Storage.renderProgress()">📈 View Progress</button>
+            <button class="btn btn-ghost" onclick="FT_Storage.switchAdminTab('activity');FT_Storage.renderActivity()">🔥 Activity Log</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- MANAGE USERS TAB -->
+      <div class="admin-tab" id="atab-users">
+        <div class="users-table-wrap">
+          <div class="table-header">
+            <div>
+              <div style="font-size:.9rem;font-weight:700;margin-bottom:2px;">All Users</div>
+              <div style="font-size:.76rem;color:var(--text2);">Manage accounts, view profiles, monitor activity</div>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table id="users-table">
+              <thead><tr>
+                <th>User</th><th>Goal</th><th>BMI</th><th>Streak</th><th>Tasks Done</th><th>Status</th><th>Actions</th>
+              </tr></thead>
+              <tbody id="users-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROGRESS TAB -->
+      <div class="admin-tab" id="atab-progress">
+        <div style="margin-bottom:20px;"><div style="font-size:1rem;font-weight:700;margin-bottom:3px;">User Progress Overview</div><div style="font-size:.82rem;color:var(--text2);">Track each user's goal completion and weekly task progress.</div></div>
+        <div id="progress-cards" style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;"></div>
+      </div>
+
+      <!-- ACTIVITY TAB -->
+      <div class="admin-tab" id="atab-activity">
+        <div style="margin-bottom:20px;"><div style="font-size:1rem;font-weight:700;margin-bottom:3px;">Streaks &amp; Login Activity</div><div style="font-size:.82rem;color:var(--text2);">Ranked by streak length.</div></div>
+        <div id="activity-list" style="display:flex;flex-direction:column;gap:12px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- VIDEO MODAL -->
+<div class="modal-overlay" id="videoModal">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <div><div class="modal-title-txt" id="modalTitle">Video</div><div style="font-size:.72rem;color:var(--text2);" id="modalSub"></div></div>
+      <div class="modal-close" onclick="FT_UI.closeVideo()">✕</div>
+    </div>
+    <div class="modal-iframe-wrap"><iframe id="modalFrame" allowfullscreen allow="autoplay"></iframe></div>
+  </div>
+</div>
+
+<!-- USER DETAIL MODAL (admin) -->
+<div class="udm-overlay" id="userDetailModal">
+  <div class="udm-panel">
+    <div class="udm-hdr">
+      <div class="udm-title">USER DETAIL</div>
+      <div class="modal-close" onclick="FT_Storage.closeUserDetail()">✕</div>
+    </div>
+    <div id="udm-content"></div>
+  </div>
+</div>
+<script>document.getElementById('userDetailModal').onclick=function(e){if(e.target===this)FT_Storage.closeUserDetail();};</script>
+
+<!--
+  ══════════════════════════════════════════════════════════
+  JAVASCRIPT MODULE LOAD ORDER
+  ══════════════════════════════════════════════════════════
+  IMPORTANT: Load order matters. Each module depends on the
+  previous. shared/constants.js MUST be first JS loaded.
+-->
+
+<!-- SHARED: Global constants & state -->
+<script src="shared/constants.js"></script>
+
+<!-- MODULE 4: Storage API + Toast (loaded 2nd so all modules can use toast & storage) -->
+<script src="module4-progress-storage/storage.js"></script>
+
+<!-- MODULE 2: Health Calculations + Auth Logic -->
+<script src="module2-health-logic/health.js"></script>
+
+<!-- MODULE 3: Diet & Exercise Recommendation Engine -->
+<script src="module3-diet-exercise-engine/recommendations.js"></script>
+
+<!-- MODULE 1: UI Interactions & Onboarding (loaded last — uses all other modules) -->
+<script src="module1-ui-frontend/ui.js"></script>
+
+</body>
+</html>
