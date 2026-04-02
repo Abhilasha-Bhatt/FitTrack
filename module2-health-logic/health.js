@@ -14,6 +14,7 @@
      - Onboarding data saving
    Integrates with: Module 3 (reads health data), Module 4 (saves via storage API)
 ═══════════════════════════════════════════════════════ */
+//window.---->globally accessible 
 
 (function(){
   'use strict';
@@ -22,8 +23,8 @@
   const ADMIN = window.FITTRACK.ADMIN;
 
   // ── Utility ──────────────────────────────────────────
-  function setText(id, v){ var e=document.getElementById(id); if(e) e.textContent=v; }
-  function todayStr(){ return new Date().toISOString().split('T')[0]; }
+  function setText(id, v){ var e=document.getElementById(id); if(e) e.textContent=v; }//update ui text
+  function todayStr(){ return new Date().toISOString().split('T')[0]; }//todays date
   function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
   // Expose utilities globally for other modules
@@ -84,6 +85,8 @@
    * @param {string} gender
    * @returns {{ min: number, max: number }}
    */
+   //male=50+2.3*inches over 5ft
+   //female=45.5+2.3*inches over ft
   function idealWeightRange(heightCm, gender){
     if(!heightCm) return { min:0, max:0 };
     var inchesOver5ft = (heightCm / 2.54) - 60;
