@@ -1,0 +1,107 @@
+/* ===== WEEKLY GOALS SPECIFIC STYLES ===== */
+
+.goal-grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .goal-grid-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card-header h2 {
+  font-size: 1.1rem;
+  margin-bottom: 4px;
+}
+
+.task-item, .habit-item {
+  background: var(--card);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.2s;
+  opacity: 0;
+  animation: slideIn 0.4s ease-out forwards;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.task-item label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.task-item.completed {
+  opacity: 0.5;
+}
+
+.task-text.completed {
+  text-decoration: line-through;
+}
+
+.habit-item {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 15px;
+}
+
+.habit-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.habit-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.day-box {
+  padding: 8px 0;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--card-border);
+  color: var(--text2);
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.day-box.active {
+  background: rgba(200,255,0,0.1);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.day-box.today {
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.habit-actions button, .task-actions button {
+  background: transparent;
+  border: none;
+  color: #ff6b6b;
+  font-size: 0.75rem;
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.habit-actions button:hover, .task-actions button:hover {
+  opacity: 1;
+}

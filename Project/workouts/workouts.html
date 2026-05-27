@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Workouts | FITTRACK</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../dashboard/dashboard.css" />
+  <link rel="stylesheet" href="workouts.css" />
+  <script src="workouts.js" defer></script>
+</head>
+<body>
+  <!-- Background Hero Image -->
+  <div class="bg-hero">
+    <img src="../dashboard/hero_bg.png" alt="" class="bg-hero-img" />
+    <div class="bg-hero-overlay"></div>
+  </div>
+
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <span class="logo-f">F</span><span class="logo-t">T</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="../dashboard/dashboard.html" class="nav-btn" title="Dashboard"><i class="fas fa-th-large"></i></a>
+        <a href="../dashboard/meal_guide.html" class="nav-btn" title="Meal Guide"><i class="fas fa-utensils"></i></a>
+        <a href="workouts.html" class="nav-btn active" title="Workouts"><i class="fas fa-dumbbell"></i></a>
+        <a href="../weekly_goal/weekly_goal.html" class="nav-btn" title="Weekly Goals"><i class="fas fa-bullseye"></i></a>
+        <a href="../dashboard/body_stats.html" class="nav-btn" title="Body Stats"><i class="fas fa-heartbeat"></i></a>
+      </nav>
+      <div class="sidebar-foot">
+        <a href="../login_page/login.html" class="nav-btn logout-btn" title="Sign Out"><i class="fas fa-sign-out-alt"></i></a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Top Bar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <div class="greeting-text">Training Sessions</div>
+          <div class="ask-text" id="user-heading">Your Personalized Library</div>
+        </div>
+        <div class="topbar-right">
+          <div class="date-badge" id="dateBadge">Loading...</div>
+          <button class="btn-primary" style="padding: 8px 16px; font-size: 0.75rem;" onclick="window.location.href='../dashboard/dashboard.html' + (window.location.search || '')">
+            BACK TO DASHBOARD
+          </button>
+        </div>
+      </header>
+
+      <div class="workouts-container">
+        <!-- Filter Section -->
+        <section class="glass-card filter-card" style="margin-bottom: 20px;">
+          <div class="card-top">
+            <span class="card-title">Filter by Discipline</span>
+          </div>
+          <div class="filter-buttons" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
+            <button class="qa-btn active-qa filter-btn" data-filter="all" style="width: auto; padding: 0 20px;">All</button>
+            <button class="qa-btn filter-btn" data-filter="yoga" style="width: auto; padding: 0 20px;">Yoga</button>
+            <button class="qa-btn filter-btn" data-filter="cardio" style="width: auto; padding: 0 20px;">Cardio</button>
+            <button class="qa-btn filter-btn" data-filter="strength" style="width: auto; padding: 0 20px;">Strength</button>
+          </div>
+        </section>
+
+        <!-- Videos Grid -->
+        <div class="videos-grid" id="videosGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+          <!-- Videos will be loaded here -->
+        </div>
+
+        <div class="loading" id="loading" style="text-align: center; padding: 40px; color: var(--text2);">
+          Analyzing your fitness profile...
+        </div>
+
+        <!-- Music Section -->
+        <section class="glass-card music-section" id="musicSection" style="margin-top: 30px;">
+          <div class="card-top">
+            <span class="card-title">🎵 Workout Playlist</span>
+          </div>
+          <div class="music-grid" id="musicGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px;">
+            <!-- Music cards injected by JS -->
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- Video Modal -->
+  <div class="modal hidden" id="videoModal">
+    <div class="modal-content glass-card" style="max-width: 900px; width: 95%;">
+      <div class="modal-header">
+        <h3 id="videoTitle">Workout Video</h3>
+        <button class="qa-btn" id="closeModal"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="video-container" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 16px; background: #000;">
+        <iframe
+          id="videoFrame"
+          style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
+          src=""
+          allow="autoplay; encrypted-media; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+      </div>
+      <div class="video-info" style="margin-top: 20px;">
+        <p id="videoDescription" style="color: var(--text2); font-size: 0.9rem; line-height: 1.6;"></p>
+        <div style="margin-top: 15px; font-weight: 700; color: var(--accent);">Duration: <span id="videoDuration">--</span></div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .now-playing {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--accent);
+      color: #000;
+      padding: 12px 24px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      font-weight: 700;
+      z-index: 1000;
+      box-shadow: 0 10px 30px rgba(200,255,0,0.3);
+    }
+    .video-card {
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .video-card:hover {
+      transform: translateY(-8px);
+    }
+  </style>
+
+  <!-- Now Playing Pill -->
+  <div id="nowPlaying" class="now-playing hidden">
+    <div class="now-playing-content" style="display: flex; align-items: center; gap: 15px;">
+      <div id="musicPlayerContainer" style="width: 40px; height: 40px; border-radius: 8px; overflow: hidden; background: #000;">
+        <!-- Iframe will be injected here -->
+      </div>
+      <span id="nowPlayingTitle">🎵 Playing...</span>
+      <button onclick="stopMusic()" style="background:none;border:none;margin-left:5px;cursor:pointer;color:#000;font-weight:bold;">✕</button>
+    </div>
+  </div>
+</body>
+</html>

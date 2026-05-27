@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FITTRACK | Body Stats</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="dashboard.css" />
+  <script src="body_stats.js" defer></script>
+</head>
+<body>
+  <!-- Background Hero Image -->
+  <div class="bg-hero">
+    <img src="hero_bg.png" alt="" class="bg-hero-img" />
+    <div class="bg-hero-overlay"></div>
+  </div>
+
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <span class="logo-f">F</span><span class="logo-t">T</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-btn" title="Dashboard"><i class="fas fa-th-large"></i></a>
+        <a href="meal_guide.html" class="nav-btn" title="Meal Guide"><i class="fas fa-utensils"></i></a>
+        <a href="../workouts/workouts.html" class="nav-btn" title="Workouts"><i class="fas fa-dumbbell"></i></a>
+        <a href="../weekly_goal/weekly_goal.html" class="nav-btn" title="Weekly Goals"><i class="fas fa-bullseye"></i></a>
+        <a href="body_stats.html" class="nav-btn active" title="Body Stats"><i class="fas fa-heartbeat"></i></a>
+      </nav>
+      <div class="sidebar-foot">
+        <a href="../login_page/login.html" class="nav-btn logout-btn" title="Sign Out"><i class="fas fa-sign-out-alt"></i></a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <div class="greeting-text">Your Profile</div>
+          <div class="ask-text">Body Stats & Preferences</div>
+        </div>
+        <div class="topbar-right">
+          <div class="date-badge" id="dateBadge">Loading...</div>
+          <button class="btn-primary" style="padding: 8px 16px; font-size: 0.75rem;" onclick="window.location.href='dashboard.html' + (window.location.search || '')">
+            BACK TO DASHBOARD
+          </button>
+        </div>
+      </header>
+
+      <div class="stats-container">
+        <section class="glass-card" id="profileSummary">
+          <div class="card-top">
+            <span class="card-title">Saved Profile Info</span>
+            <button class="qa-btn active-qa" id="editBtn" style="width: auto; padding: 0 15px;">Edit Profile</button>
+          </div>
+          
+          <div class="summary-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; margin-top: 20px;">
+            <div class="summary-item">
+              <span class="label">Age</span>
+              <span id="summaryAge" class="val">—</span>
+            </div>
+            <div class="summary-item">
+              <span class="label">Gender</span>
+              <span id="summaryGender" class="val">—</span>
+            </div>
+            <div class="summary-item">
+              <span class="label">Height</span>
+              <span id="summaryHeight" class="val">—</span>
+            </div>
+            <div class="summary-item">
+              <span class="label">Weight</span>
+              <span id="summaryWeight" class="val">—</span>
+            </div>
+            <div class="summary-item">
+              <span class="label">Target Weight</span>
+              <span id="summaryTargetWeight" class="val">—</span>
+            </div>
+            <div class="summary-item">
+              <span class="label">Activity Level</span>
+              <span id="summaryActivityLevel" class="val">—</span>
+            </div>
+            <div class="summary-item">
+              <span class="label">Diet</span>
+              <span id="summaryDiet" class="val">—</span>
+            </div>
+            <div class="summary-item">
+              <span class="label">Fitness Level</span>
+              <span id="summaryFitnessLevel" class="val">—</span>
+            </div>
+          </div>
+          
+          <div class="profile-note" style="margin-top: 20px; color: var(--text2); font-size: 0.8rem;">
+            Signed in as: <strong id="profileEmail" style="color: var(--accent);">unknown</strong>
+            <p id="profileMessage" style="margin-top: 4px;">Loading profile...</p>
+          </div>
+        </section>
+
+        <!-- Edit Form -->
+        <section class="glass-card hidden" id="profileForm" style="margin-top: 20px;">
+          <div class="card-top">
+            <span class="card-title">Update Your Stats</span>
+          </div>
+          
+          <div class="form-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+            <div class="fg">
+              <label>Age</label>
+              <input type="number" id="age" min="10" max="100" />
+            </div>
+            <div class="fg">
+              <label>Gender</label>
+              <select id="gender">
+                <option value="">Select</option>
+                <option>Male</option>
+                <option>Female</option>
+                <option>Non-binary</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label>Height (cm)</label>
+              <input type="number" id="height" />
+            </div>
+            <div class="fg">
+              <label>Weight (kg)</label>
+              <input type="number" id="weight" />
+            </div>
+            <div class="fg">
+              <label>Target (kg)</label>
+              <input type="number" id="targetWeight" />
+            </div>
+            <div class="fg">
+              <label>Activity</label>
+              <select id="activityLevel">
+                <option>Sedentary</option>
+                <option>Active</option>
+                <option>Athlete</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-actions" style="margin-top: 24px; display: flex; gap: 12px;">
+            <button class="btn-primary" id="saveBtn" style="flex: 1;">SAVE CHANGES</button>
+            <button class="btn-ghost" id="cancelBtn" style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 12px; color: #fff; cursor: pointer;">CANCEL</button>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <style>
+    .summary-item {
+      background: rgba(255,255,255,0.03);
+      padding: 16px;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .summary-item .label {
+      font-size: 0.7rem;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .summary-item .val {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .fg label {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--text2);
+      margin-bottom: 8px;
+    }
+    input, select {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 12px;
+      color: #fff;
+      outline: none;
+    }
+    input:focus, select:focus {
+      border-color: var(--accent);
+    }
+  </style>
+</body>
+</html>
