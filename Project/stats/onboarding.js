@@ -10,7 +10,7 @@ const state = {
   preferences: new Set(),
   time: '',
   days: '',
-  level: '',
+  level: ''
 };
 
 const queryEmail = new URLSearchParams(window.location.search).get('email');
