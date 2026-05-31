@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weekly Goals | FITTRACK</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../dashboard/dashboard.css" />
+  <link rel="stylesheet" href="weekly_goal.css" />
+  <script src="weekly_goal.js" defer></script>
+</head>
+<body>
+  <!-- Background Hero Image -->
+  <div class="bg-hero">
+    <img src="../dashboard/hero_bg.png" alt="" class="bg-hero-img" />
+    <div class="bg-hero-overlay"></div>
+  </div>
+
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <span class="logo-f">F</span><span class="logo-t">T</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="../dashboard/dashboard.html" class="nav-btn" title="Dashboard"><i class="fas fa-th-large"></i></a>
+        <a href="../dashboard/meal_guide.html" class="nav-btn" title="Meal Guide"><i class="fas fa-utensils"></i></a>
+        <a href="../workouts/workouts.html" class="nav-btn" title="Workouts"><i class="fas fa-dumbbell"></i></a>
+        <a href="weekly_goal.html" class="nav-btn active" title="Weekly Goals"><i class="fas fa-bullseye"></i></a>
+        <a href="../dashboard/body_stats.html" class="nav-btn" title="Body Stats"><i class="fas fa-heartbeat"></i></a>
+      </nav>
+      <div class="sidebar-foot">
+        <a href="../login_page/login.html" class="nav-btn logout-btn" title="Sign Out"><i class="fas fa-sign-out-alt"></i></a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Top Bar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <div class="greeting-text">Progress Tracker</div>
+          <div class="ask-text">Weekly Goals & Habits</div>
+        </div>
+        <div class="topbar-right">
+          <div class="date-badge" id="dateBadge">Loading...</div>
+          <button class="btn-primary" style="padding: 8px 16px; font-size: 0.75rem;" onclick="window.location.href='../dashboard/dashboard.html' + (window.location.search || '')">
+            BACK TO DASHBOARD
+          </button>
+        </div>
+      </header>
+
+      <div class="goal-grid-container">
+        <!-- Tasks Section -->
+        <section class="glass-card tasks-card">
+          <div class="card-top">
+            <div class="card-icon-label">
+              <span class="card-dot" style="background: var(--accent);"></span>
+              <span class="card-title">To-Do List</span>
+            </div>
+            <span class="card-period" id="taskCount">0 tasks</span>
+          </div>
+          
+          <form id="taskForm" class="task-form" style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <input id="taskInput" type="text" placeholder="Add a new task..." style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 12px; padding: 12px; color: #fff; outline: none;" />
+            <button type="submit" class="qa-btn active-qa" style="width: auto; padding: 0 20px;">ADD</button>
+          </form>
+          
+          <ul id="taskList" class="task-list" style="list-style: none; display: flex; flex-direction: column; gap: 10px;"></ul>
+        </section>
+
+        <!-- Habits Section -->
+        <section class="glass-card habits-card">
+          <div class="card-top">
+            <div class="card-icon-label">
+              <span class="card-dot" style="background: #ffb347;"></span>
+              <span class="card-title">Habit Tracker</span>
+            </div>
+            <span class="card-period" id="streakTotal">0 streak</span>
+          </div>
+          
+          <form id="habitForm" class="task-form" style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <input id="habitInput" type="text" placeholder="Add a new habit..." style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 12px; padding: 12px; color: #fff; outline: none;" />
+            <button type="submit" class="qa-btn active-qa" style="width: auto; padding: 0 20px;">ADD</button>
+          </form>
+          
+          <div id="habitList" class="habit-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
+        </section>
+      </div>
+      
+      <div class="profile-note" style="margin-top: 20px; text-align: center; font-size: 0.8rem; color: var(--text2);">
+        Signed in as: <strong id="userEmail" style="color: var(--accent);">unknown</strong>
+        <p id="loggedMessage" style="opacity: 0.7; margin-top: 5px;">Welcome to your weekly goal dashboard.</p>
+      </div>
+    </main>
+  </div>
+
+  <style>
+    .goal-grid-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 900px) {
+      .goal-grid-container { grid-template-columns: 1fr; }
+    }
+    .task-item, .habit-item {
+      background: rgba(255,255,255,0.03);
+      padding: 12px 16px;
+      border-radius: 14px;
+      border: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .task-item.completed { opacity: 0.5; text-decoration: line-through; }
+  </style>
+</body>
+</html>

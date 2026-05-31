@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FITTRACK | Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Bebas+Neue&family=Space+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="dashboard.css" />
+  <script src="dashboard.js" defer></script>
+</head>
+<body>
+  <!-- Background Hero Image -->
+  <div class="bg-hero">
+    <img src="hero_bg.png" alt="" class="bg-hero-img" />
+    <div class="bg-hero-overlay"></div>
+  </div>
+
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <span class="logo-f">F</span><span class="logo-t">T</span>
+      </div>
+
+      <nav class="sidebar-nav" id="sidebarNav">
+        <a href="#" class="nav-btn active" data-section="dashboard" title="Dashboard">
+          <i class="fas fa-th-large"></i>
+          <span class="nav-label">Home</span>
+        </a>
+        <a href="#" class="nav-btn" data-target="meal_guide.html" title="Meal Guide">
+          <i class="fas fa-utensils"></i>
+          <span class="nav-label">Meals</span>
+        </a>
+        <a href="#" class="nav-btn" data-target="../workouts/workouts.html" title="Workouts">
+          <i class="fas fa-dumbbell"></i>
+          <span class="nav-label">Workout</span>
+        </a>
+        <a href="#" class="nav-btn" data-target="../weekly_goal/weekly_goal.html" title="Weekly Goals">
+          <i class="fas fa-bullseye"></i>
+          <span class="nav-label">Goals</span>
+        </a>
+        <a href="#" class="nav-btn" data-target="body_stats.html" title="Body Stats">
+          <i class="fas fa-heartbeat"></i>
+          <span class="nav-label">Stats</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-foot">
+        <a href="../login_page/login.html" class="nav-btn logout-btn" title="Sign Out">
+          <i class="fas fa-sign-out-alt"></i>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Top Bar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <div class="greeting-text">NO EXCUSES</div>
+          <div class="ask-text">Push harder than yesterday if you want a different tomorrow.</div>
+        </div>
+        <div class="topbar-right">
+          <div class="topbar-actions">
+            <button class="action-btn"><i class="fas fa-search"></i></button>
+            <button class="action-btn"><i class="fas fa-calendar-alt"></i></button>
+          </div>
+          <div class="date-badge" id="dateBadge">15 - 28 May 2026</div>
+          <div class="user-chip">
+            <div class="user-info">
+              <span class="user-name" id="userName">Athlete</span>
+              <span class="user-role">Member</span>
+            </div>
+            <div class="user-avatar" id="userAvatar">
+              <i class="fas fa-user"></i>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Dashboard Cards Grid -->
+      <div class="cards-grid">
+        <!-- Activity Card -->
+        <div class="glass-card activity-card" id="activityCard">
+          <div class="card-top">
+            <div class="card-icon-label">
+              <span class="card-dot" style="background:#c8ff00;"></span>
+              <span class="card-title">Activity</span>
+            </div>
+            <span class="card-period">Last 7 days</span>
+          </div>
+          <div class="activity-bars">
+            <div class="bar-group">
+              <div class="bar-label">Browsing</div>
+              <div class="bar-track"><div class="bar-fill" style="width:80%; background:#c8ff00;"></div></div>
+            </div>
+            <div class="bar-group">
+              <div class="bar-label">Workout</div>
+              <div class="bar-track"><div class="bar-fill" style="width:60%; background:#ffb347;"></div></div>
+            </div>
+            <div class="bar-group">
+              <div class="bar-label">Steps</div>
+              <div class="bar-track"><div class="bar-fill" style="width:45%; background:#ff6b6b;"></div></div>
+            </div>
+          </div>
+          <div class="card-big-number" id="stepsCount">0</div>
+          <div class="card-small-label" style="display:flex; justify-content:flex-start; gap: 10px; align-items:center; margin-top:5px;">
+             <button id="decStepsBtn" class="qa-btn" style="width:24px;height:24px;"><i class="fas fa-minus" style="font-size:0.7rem;"></i></button>
+             <span>Update Steps</span>
+             <button id="incStepsBtn" class="qa-btn" style="width:24px;height:24px;"><i class="fas fa-plus" style="font-size:0.7rem;"></i></button>
+          </div>
+        </div>
+
+        <!-- Sleep Card -->
+        <div class="glass-card sleep-card" id="sleepCard">
+          <div class="card-top">
+            <div class="card-icon-label">
+              <span class="card-dot" style="background:#a78bfa;"></span>
+              <span class="card-title">Sleep</span>
+            </div>
+            <span class="card-period">Last 7 days</span>
+          </div>
+          <div class="sleep-chart" id="sleepChart">
+            <canvas id="sleepCanvas" width="260" height="80"></canvas>
+          </div>
+          <div class="card-big-number sleep-val"><span id="sleepHrsText">7</span>h <span class="thin" id="sleepMinsText">0</span>m</div>
+          <div class="card-small-label" style="display:flex; gap: 10px; align-items:center; margin-top:5px;">
+             <button id="decSleepBtn" class="qa-btn" style="width:24px;height:24px;"><i class="fas fa-minus" style="font-size:0.7rem;"></i></button>
+             <span>Update Sleep</span>
+             <button id="incSleepBtn" class="qa-btn" style="width:24px;height:24px;"><i class="fas fa-plus" style="font-size:0.7rem;"></i></button>
+          </div>
+        </div>
+
+        <!-- Water Intake Card -->
+        <div class="glass-card water-card" id="waterCard">
+          <div class="card-top">
+            <div class="card-icon-label">
+              <span class="card-dot" style="background:#3b82f6;"></span>
+              <span class="card-title">Water Intake</span>
+            </div>
+            <span class="card-period">Daily Goal</span>
+          </div>
+          <div class="water-graphics" style="display: flex; justify-content: center; align-items: center; height: 50px; margin: 15px 0; font-size: 3.5rem;">
+            💧
+          </div>
+          <div class="card-big-number water-val"><span id="userWaterVal">--</span> <span class="thin">Glasses</span></div>
+          <div class="card-small-label" style="display:flex; justify-content:center; gap: 10px; align-items:center; margin-top:5px;">
+             <button id="decWaterBtn" class="qa-btn" style="width:24px;height:24px;"><i class="fas fa-minus" style="font-size:0.7rem;"></i></button>
+             <span id="userDietLabel">Stay hydrated!</span>
+             <button id="incWaterBtn" class="qa-btn" style="width:24px;height:24px;"><i class="fas fa-plus" style="font-size:0.7rem;"></i></button>
+          </div>
+        </div>
+
+        <!-- Speed / Gauge Card -->
+        <div class="glass-card gauge-card" id="gaugeCard">
+          <div class="card-top">
+            <div class="quick-actions">
+              <button class="qa-btn"><i class="fas fa-walking"></i></button>
+              <button class="qa-btn"><i class="fas fa-running"></i></button>
+              <button class="qa-btn active-qa"><i class="fas fa-bicycle"></i></button>
+              <button class="qa-btn"><i class="fas fa-swimmer"></i></button>
+            </div>
+          </div>
+          <div class="gauge-display">
+            <svg viewBox="0 0 200 120" class="gauge-svg">
+              <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="12" stroke-linecap="round"/>
+              <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#gaugeGrad)" stroke-width="12" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="125" id="gaugeArc"/>
+              <defs>
+                <linearGradient id="gaugeGrad" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="#c8ff00"/>
+                  <stop offset="100%" stop-color="#ffb347"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <div class="gauge-center">
+              <div class="gauge-label">Speed</div>
+              <div class="gauge-value" id="gaugeValue">50%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Row -->
+      <div class="bottom-row">
+        <!-- Fitness Profile -->
+        <div class="glass-card wellness-card">
+          <div class="card-top">
+            <span class="card-title">Fitness Profile</span>
+          </div>
+          <div class="wellness-display">
+            <div class="wellness-number" id="bmiScore" style="font-size:3.5rem">--</div>
+            <div class="wellness-meta">
+              <strong id="bmiLabel">BMI</strong>
+              <span id="activityLevelDisplay" style="text-transform:capitalize">--</span>
+            </div>
+          </div>
+          <div class="wellness-footer">
+            <div class="wf-item">
+              <i class="fas fa-running"></i>
+              <div>
+                <div class="wf-label">Level</div>
+                <div class="wf-val" id="levelDisplay" style="text-transform:capitalize;">--</div>
+              </div>
+            </div>
+            <div class="wf-item">
+              <i class="fas fa-clock"></i>
+              <div>
+                <div class="wf-label">Sessions</div>
+                <div class="wf-val" id="durationDisplay" style="text-transform:capitalize;">--</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Weight Profile -->
+        <div class="glass-card focus-card">
+          <div class="card-top">
+            <span class="card-title">Weight Tracking</span>
+          </div>
+          <div class="wellness-display">
+            <div class="wellness-number focus-num" id="currentWeightDisplay" style="font-size:3.5rem">--</div>
+            <div class="wellness-meta">
+              <strong>Current (kg)</strong>
+              <span id="weightDiffDisplay">--</span>
+            </div>
+          </div>
+          <div class="wellness-footer">
+            <div class="wf-item">
+              <i class="fas fa-bullseye"></i>
+              <div>
+                <div class="wf-label">Target</div>
+                <div class="wf-val" id="targetWeightDisplay">-- kg</div>
+              </div>
+            </div>
+            <div class="wf-item">
+              <i class="fas fa-arrows-alt-v"></i>
+              <div>
+                <div class="wf-label">Height</div>
+                <div class="wf-val" id="heightDisplay">-- cm</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Streak / Energy Card -->
+        <div class="glass-card energy-card">
+          <div class="card-top">
+            <span class="card-title">Balanced Energy & Recovery</span>
+          </div>
+          <div class="energy-display">
+            <div class="energy-ring">
+              <svg viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="6"/>
+                <circle cx="50" cy="50" r="40" fill="none" stroke="url(#energyGrad)" stroke-width="6" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="50" transform="rotate(-90 50 50)"/>
+                <defs>
+                  <linearGradient id="energyGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#c8ff00"/>
+                    <stop offset="100%" stop-color="#22c55e"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div class="energy-center">
+                <i class="fas fa-fire" id="streakIcon"></i>
+                <span id="streakDays">12</span>
+              </div>
+            </div>
+            <div class="energy-label">Overall Health Stability Index</div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Calendar Modal -->
+  <div id="calendarModal" class="modal hidden">
+    <div class="modal-content glass-card">
+      <div class="modal-header">
+        <h3>Training Calendar</h3>
+        <button id="closeCalendar" class="qa-btn"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="calendar-grid" id="fullCalendar">
+        <!-- JS generated days -->
+      </div>
+      <div class="calendar-legend" style="margin-top: 15px; display: flex; gap: 15px; font-size: 0.7rem;">
+        <span><span class="card-dot" style="background:var(--accent);"></span> Completed</span>
+        <span><span class="card-dot" style="background:var(--card-border);"></span> Planned</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
