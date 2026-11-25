@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FITTRACK — Elite Fitness Platform</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <!-- Video Background with multiple fallback sources -->
+  <div class="video-bg">
+    <video autoplay muted loop playsinline id="bg-video">
+      <source src="https://assets.mixkit.co/videos/preview/mixkit-man-working-out-at-the-gym-23420-large.mp4" type="video/mp4">
+      <source src="https://assets.mixkit.co/videos/preview/mixkit-intense-training-at-the-gym-23402-large.mp4" type="video/mp4">
+    </video>
+    <div class="video-overlay"></div>
+    <!-- CSS animated fallback that shows if video doesn't load -->
+    <div class="animated-bg-fallback"></div>
+  </div>
+
+  <!-- Main Auth Container -->
+  <div class="auth-page">
+    <!-- Top Bar -->
+    <nav class="top-bar">
+      <div class="logo">FIT<span>TRACK</span></div>
+      <div class="top-bar-tagline">ELITE FITNESS PLATFORM</div>
+    </nav>
+
+    <div class="auth-container">
+      <!-- Left Hero Section -->
+      <div class="auth-hero-section">
+        <div class="hero-content">
+          <h1 class="hero-headline">
+            PUSH<br>
+            YOUR<br>
+            <span class="accent-text">LIMITS</span>
+          </h1>
+          <p class="hero-sub">Transform your body. Elevate your mind. Track every rep, meal, and milestone.</p>
+          <div class="hero-stats">
+            <div class="stat-item">
+              <div class="stat-number">50K+</div>
+              <div class="stat-label">Active Athletes</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">1M+</div>
+              <div class="stat-label">Workouts Tracked</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">98%</div>
+              <div class="stat-label">Success Rate</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Form Section -->
+      <div class="auth-form-section">
+        <div class="form-wrapper">
+          <!-- Signup Form -->
+          <div id="v-signup">
+            <h2 class="form-title">Create Account</h2>
+            <p class="form-desc">Begin your transformation journey today.</p>
+
+            <div class="input-group">
+              <div class="input-icon">👤</div>
+              <input type="text" id="su-name" placeholder="Full Name" />
+            </div>
+
+            <div class="input-group">
+              <div class="input-icon">✉</div>
+              <input type="email" id="su-email" placeholder="Email Address" />
+            </div>
+
+            <div class="input-group">
+              <div class="input-icon">🔒</div>
+              <input type="password" id="su-pass" placeholder="Password (min 6 chars)" />
+            </div>
+
+            <div class="input-group">
+              <div class="input-icon">🎯</div>
+              <input type="text" id="su-goal" placeholder="Your Fitness Goal" />
+            </div>
+
+            <button class="btn-primary" onclick="doSignup()">
+              GET STARTED
+              <span class="btn-arrow">→</span>
+            </button>
+
+            <div class="form-switch">
+              Already a member? <a onclick="showView('login')">Sign In</a>
+            </div>
+          </div>
+
+          <!-- Login Form -->
+          <div id="v-login" class="hidden">
+            <h2 class="form-title">Welcome Back</h2>
+            <p class="form-desc">Continue pushing your limits.</p>
+
+            <div class="input-group">
+              <div class="input-icon">✉</div>
+              <input type="email" id="li-email" placeholder="Email Address" />
+            </div>
+
+            <div class="input-group">
+              <div class="input-icon">🔒</div>
+              <input type="password" id="li-pass" placeholder="Password" />
+            </div>
+
+            <button class="btn-primary" onclick="doLogin()">
+              SIGN IN
+              <span class="btn-arrow">→</span>
+            </button>
+
+            <div class="form-switch">
+              New here? <a onclick="showView('signup')">Create Account</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Features -->
+    <div class="bottom-features">
+      <div class="feature-pill"><span>💪</span> Workout Plans</div>
+      <div class="feature-pill"><span>🥗</span> Meal Tracking</div>
+      <div class="feature-pill"><span>📊</span> Body Stats</div>
+      <div class="feature-pill"><span>🔥</span> Daily Streaks</div>
+    </div>
+  </div>
+</body>
+</html>

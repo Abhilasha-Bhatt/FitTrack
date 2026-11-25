@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Meal Guide | FITTRACK</title>
+    <!-- CSS -->
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="meal_guide.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="meal_guide.js" defer></script>
+</head>
+<body>
+    <!-- Background Hero Image -->
+    <div class="bg-hero">
+        <img src="hero_bg.png" alt="" class="bg-hero-img" />
+        <div class="bg-hero-overlay"></div>
+    </div>
+
+    <div class="app-shell">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <span class="logo-f">F</span><span class="logo-t">T</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-btn" title="Dashboard"><i class="fas fa-th-large"></i></a>
+                <a href="meal_guide.html" class="nav-btn active" title="Meal Guide"><i class="fas fa-utensils"></i></a>
+                <a href="../workouts/workouts.html" class="nav-btn" title="Workouts"><i class="fas fa-dumbbell"></i></a>
+                <a href="../weekly_goal/weekly_goal.html" class="nav-btn" title="Weekly Goals"><i class="fas fa-bullseye"></i></a>
+                <a href="body_stats.html" class="nav-btn" title="Body Stats"><i class="fas fa-heartbeat"></i></a>
+            </nav>
+            <div class="sidebar-foot">
+                <a href="../login_page/login.html" class="nav-btn logout-btn" title="Sign Out"><i class="fas fa-sign-out-alt"></i></a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Top Bar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <div class="greeting-text">Nutrition & Diet</div>
+                    <div class="ask-text">AI Smart Meal Planner</div>
+                </div>
+                <div class="topbar-right">
+                    <div class="date-badge" id="dateBadge">Loading...</div>
+                    <button class="btn-primary" style="padding: 8px 16px; font-size: 0.75rem;" onclick="window.location.href='dashboard.html' + (window.location.search || '')">
+                        BACK TO DASHBOARD
+                    </button>
+                </div>
+            </header>
+
+            <div class="meal-grid-layout">
+                <!-- AI Generator Sidebar -->
+                <aside class="meal-sidebar">
+                    <div class="glass-card ai-card">
+                        <div class="card-top">
+                            <span class="card-title"><span class="sparkle">✨</span> AI Generator</span>
+                        </div>
+                        <p class="card-subtitle" style="font-size: 0.7rem; color: var(--text2); margin-top: -10px; margin-bottom: 20px;">Configure your preferences</p>
+                        
+                        <style>
+                            .form-group { margin-bottom: 16px; }
+                            .form-group label { display: block; font-size: 0.75rem; color: var(--text2); margin-bottom: 8px; }
+                            .meal-sidebar select, .meal-sidebar input {
+                                width: 100%;
+                                background: #1a1a1a;
+                                border: 1px solid var(--card-border);
+                                border-radius: 12px;
+                                padding: 12px;
+                                color: #fff;
+                                font-size: 0.85rem;
+                                color-scheme: dark;
+                            }
+                            .meal-sidebar select option {
+                                background: #1a1a1a;
+                                color: #fff;
+                            }
+                            .radio-group { display: flex; gap: 8px; }
+                            .radio-btn { flex: 1; position: relative; }
+                            .radio-btn input { display: none; }
+                            .radio-btn span {
+                                display: block;
+                                padding: 10px;
+                                background: rgba(0,0,0,0.3); /* DARK BACKGROUND */
+                                border: 1px solid var(--card-border);
+                                border-radius: 10px;
+                                text-align: center;
+                                font-size: 0.8rem;
+                                cursor: pointer;
+                                transition: all 0.2s;
+                            }
+                            .radio-btn input:checked + span {
+                                background: rgba(200,255,0,0.15);
+                                border-color: var(--accent);
+                                color: var(--accent);
+                            }
+                        </style>
+
+                        <div class="form-group">
+                            <label>Daily Budget Range</label>
+                            <select id="budget-range">
+                                <option value="low">Budget Friendly (₹100-₹300)</option>
+                                <option value="medium" selected>Balanced (₹300-₹500)</option>
+                                <option value="high">Premium (₹500+)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Dietary Preference</label>
+                            <div class="radio-group">
+                                <label class="radio-btn">
+                                    <input type="radio" name="diet" value="vegetarian" checked>
+                                    <span>Veg</span>
+                                </label>
+                                <label class="radio-btn">
+                                    <input type="radio" name="diet" value="non-vegetarian">
+                                    <span>Non-Veg</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Fitness Goal</label>
+                            <select id="fitness-goal">
+                                <option value="weight-loss">Weight Loss</option>
+                                <option value="muscle-gain">Muscle Gain</option>
+                                <option value="maintenance">Maintenance</option>
+                            </select>
+                        </div>
+
+                        <button id="generate-btn" class="btn-primary" style="width: 100%; margin-top: 10px;">
+                            GENERATE PLAN
+                        </button>
+                    </div>
+
+                    <div class="glass-card stats-mini-card" style="margin-top: 16px;">
+                        <div class="stat-item" style="display: flex; justify-content: space-between; align-items: center;">
+                            <span class="stat-label" style="font-size: 0.8rem; color: var(--text2);">Target Calories</span>
+                            <span class="stat-value" id="total-calories" style="font-weight: 700; color: var(--accent);">0 kcal</span>
+                        </div>
+                        <div class="stat-progress" style="height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-top: 12px; overflow: hidden;">
+                            <div class="progress-bar" id="cal-progress" style="width: 0%; height: 100%; background: var(--accent); transition: width 0.5s;"></div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Meal Results Area -->
+                <section class="meal-results">
+                    <div id="loading-overlay" class="hidden glass-card" style="display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 15px; min-height: 300px;">
+                        <div class="loader" style="width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                        <p style="font-size: 0.9rem; color: var(--text2);">AI is analyzing ingredients...</p>
+                    </div>
+                    <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+
+                    <div id="meals-container" class="meals-list">
+                        <!-- Meals will be injected here -->
+                        <div class="empty-state glass-card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px; text-align: center; gap: 15px;">
+                            <div class="empty-icon" style="font-size: 3rem;">🍱</div>
+                            <h2 style="font-size: 1.2rem;">Ready to eat?</h2>
+                            <p style="font-size: 0.9rem; color: var(--text2); max-width: 300px;">Adjust your preferences and click "Generate Plan" to see your AI-optimized meals.</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast hidden" style="position: fixed; bottom: 24px; right: 24px; padding: 12px 24px; background: var(--accent); color: #000; border-radius: 12px; font-weight: 700; z-index: 2000;"></div>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FITTRACK Onboarding</title>
+  <link rel="stylesheet" href="onboarding.css" />
+  <script src="onboarding.js" defer></script>
+</head>
+<body>
+  <div class="page" id="pg-onboard">
+    <div class="ob-hdr">
+      <div class="logo" style="font-size:1.3rem;"><span class="logo-neon">FIT</span><span>TRACK</span></div>
+      <div class="ob-steps">
+        <div class="ob-step act" id="obs-1"><div class="ob-snum">1</div><span>Body Stats</span></div>
+        <div class="ob-sep"></div>
+        <div class="ob-step" id="obs-2"><div class="ob-snum">2</div><span>Health</span></div>
+        <div class="ob-sep"></div>
+        <div class="ob-step" id="obs-3"><div class="ob-snum">3</div><span>Preferences</span></div>
+        <div class="ob-sep"></div>
+        <div class="ob-step" id="obs-4"><div class="ob-snum">4</div><span>Schedule</span></div>
+      </div>
+      <button class="btn btn-ghost" style="font-size:.76rem;padding:7px 14px;" onclick="skipOnboard()">Skip →</button>
+    </div>
+    <div class="ob-body">
+      <div class="ob-sec act" id="obs-sec-1">
+        <div class="sec-num">01 / 04</div><div class="sec-title">YOUR BODY STATS</div>
+        <div class="sec-desc">Help us understand your body to personalize your experience.</div>
+        <div class="r2">
+          <div class="fg"><label>Age</label><input type="number" id="ob-age" placeholder="25" min="10" max="100"/></div>
+          <div class="fg"><label>Gender</label><select id="ob-gender"><option value="">Select</option><option>Male</option><option>Female</option><option>Non-binary</option><option>Prefer not to say</option></select></div>
+        </div>
+        <div class="r2">
+          <div class="fg"><label>Height (cm)</label><input type="number" id="ob-height" placeholder="175"/></div>
+          <div class="fg"><label>Weight (kg)</label><input type="number" id="ob-weight" placeholder="70"/></div>
+        </div>
+        <div class="r2">
+          <div class="fg"><label>Target Weight (kg)</label><input type="number" id="ob-tweight" placeholder="65"/></div>
+          <div class="fg"><label>Activity Level</label><select id="ob-activity"><option value="">Select</option><option>Sedentary</option><option>Lightly Active</option><option>Moderately Active</option><option>Very Active</option><option>Athlete</option></select></div>
+        </div>
+      </div>
+      <div class="ob-sec" id="obs-sec-2">
+        <div class="sec-num">02 / 04</div><div class="sec-title">HEALTH INFORMATION</div>
+        <div class="sec-desc">Keep your workouts safe and effective.</div>
+        <div class="fg">
+          <label>Do you take any medications?</label>
+          <div class="med-row">
+            <div class="med-btn act" id="med-no" onclick="toggleMed('no')">✕ No medications</div>
+            <div class="med-btn" id="med-yes" onclick="toggleMed('yes')">✓ Yes, I do</div>
+          </div>
+        </div>
+        <div id="med-detail" style="display:none;"><div class="fg"><label>List your medications</label><textarea id="ob-meds" rows="3" placeholder="e.g. Metformin 500mg..."></textarea></div></div>
+        <div class="fg"><label>Health conditions or injuries?</label><textarea id="ob-conditions" rows="3" placeholder="e.g. Lower back pain... (leave blank if none)"></textarea></div>
+        <div class="fg"><label>Dietary Preference</label><select id="ob-diet"><option value="">Select</option><option>No restriction</option><option>Vegetarian</option><option>Vegan</option><option>Keto</option><option>Paleo</option><option>Gluten-Free</option><option>Intermittent Fasting</option></select></div>
+        <div class="fg"><label>Daily water intake (glasses)</label><input type="number" id="ob-water" placeholder="8" min="1" max="20"/></div>
+      </div>
+      <div class="ob-sec" id="obs-sec-3">
+        <div class="sec-num">03 / 04</div><div class="sec-title">EXERCISE PREFERENCES</div>
+        <div class="sec-desc">Select all that interest you.</div>
+        <div class="pref-grid">
+          <div class="pref-card" data-pref="yoga" onclick="togglePref(this)"><span class="pref-icon">🧘</span><div class="pref-name">Yoga</div><div class="pref-desc">Flexibility &amp; mindfulness</div></div>
+          <div class="pref-card" data-pref="strength" onclick="togglePref(this)"><span class="pref-icon">🏋️</span><div class="pref-name">Strength Training</div><div class="pref-desc">Build muscle &amp; power</div></div>
+          <div class="pref-card" data-pref="cardio" onclick="togglePref(this)"><span class="pref-icon">🏃</span><div class="pref-name">Cardio</div><div class="pref-desc">Burn fat &amp; stamina</div></div>
+          <div class="pref-card" data-pref="meditation" onclick="togglePref(this)"><span class="pref-icon">🌿</span><div class="pref-name">Meditation</div><div class="pref-desc">Mental clarity &amp; calm</div></div>
+          <div class="pref-card" data-pref="hiit" onclick="togglePref(this)"><span class="pref-icon">⚡</span><div class="pref-name">HIIT</div><div class="pref-desc">High-intensity intervals</div></div>
+          <div class="pref-card" data-pref="pilates" onclick="togglePref(this)"><span class="pref-icon">🤸</span><div class="pref-name">Pilates</div><div class="pref-desc">Core strength &amp; posture</div></div>
+          <div class="pref-card" data-pref="cycling" onclick="togglePref(this)"><span class="pref-icon">🚴</span><div class="pref-name">Cycling</div><div class="pref-desc">Endurance &amp; legs</div></div>
+          <div class="pref-card" data-pref="dance" onclick="togglePref(this)"><span class="pref-icon">💃</span><div class="pref-name">Dance Fitness</div><div class="pref-desc">Fun cardio workout</div></div>
+          <div class="pref-card" data-pref="stretching" onclick="togglePref(this)"><span class="pref-icon">🌙</span><div class="pref-name">Stretching</div><div class="pref-desc">Recovery &amp; mobility</div></div>
+        </div>
+      </div>
+      <div class="ob-sec" id="obs-sec-4">
+        <div class="sec-num">04 / 04</div><div class="sec-title">YOUR SCHEDULE</div>
+        <div class="sec-desc">Plan your workouts around your life.</div>
+        <div class="fg"><label>Preferred workout time</label>
+          <div class="slot-grid">
+            <div class="slot" data-time="early" onclick="selectSlot(this,'time')"><div class="sv">5–7 AM</div><div class="sl">Early Bird</div></div>
+            <div class="slot" data-time="morning" onclick="selectSlot(this,'time')"><div class="sv">8–10 AM</div><div class="sl">Morning</div></div>
+            <div class="slot" data-time="afternoon" onclick="selectSlot(this,'time')"><div class="sv">12–2 PM</div><div class="sl">Afternoon</div></div>
+            <div class="slot" data-time="evening" onclick="selectSlot(this,'time')"><div class="sv">6–9 PM</div><div class="sl">Evening</div></div>
+          </div>
+        </div>
+        <div class="fg" style="margin-top:20px;"><label>Days per week</label>
+          <div class="slot-grid" style="grid-template-columns:repeat(7,1fr);">
+            <div class="slot" data-days="1" onclick="selectSlot(this,'days')"><div class="sv">1</div><div class="sl">day</div></div>
+            <div class="slot" data-days="2" onclick="selectSlot(this,'days')"><div class="sv">2</div><div class="sl">days</div></div>
+            <div class="slot" data-days="3" onclick="selectSlot(this,'days')"><div class="sv">3</div><div class="sl">days</div></div>
+            <div class="slot" data-days="4" onclick="selectSlot(this,'days')"><div class="sv">4</div><div class="sl">days</div></div>
+            <div class="slot" data-days="5" onclick="selectSlot(this,'days')"><div class="sv">5</div><div class="sl">days</div></div>
+            <div class="slot" data-days="6" onclick="selectSlot(this,'days')"><div class="sv">6</div><div class="sl">days</div></div>
+            <div class="slot" data-days="7" onclick="selectSlot(this,'days')"><div class="sv">7</div><div class="sl">days</div></div>
+          </div>
+        </div>
+        <div class="fg" style="margin-top:20px;"><label>Session duration</label>
+          <select id="ob-duration"><option>15–20 min</option><option>30 min</option><option selected>45 min</option><option>60 min</option><option>90+ min</option></select>
+        </div>
+        <div class="fg"><label>Fitness level</label>
+          <div class="slot-grid" style="grid-template-columns:1fr 1fr 1fr;">
+            <div class="slot" data-level="Beginner" onclick="selectSlot(this,'level')"><div class="sv">🌱</div><div class="sl">Beginner</div></div>
+            <div class="slot" data-level="Intermediate" onclick="selectSlot(this,'level')"><div class="sv">🔥</div><div class="sl">Intermediate</div></div>
+            <div class="slot" data-level="Advanced" onclick="selectSlot(this,'level')"><div class="sv">⚡</div><div class="sl">Advanced</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ob-ftr">
+      <button class="btn btn-ghost" id="ob-prev" onclick="obPrev()" style="visibility:hidden;">← Back</button>
+      <div class="prog-wrap">
+        <div class="prog-bar"><div class="prog-fill" id="ob-prog" style="width:25%;"></div></div>
+        <span class="prog-label" id="ob-lbl">1 / 4</span>
+      </div>
+      <button class="btn btn-accent" id="ob-next" onclick="obNext()">Continue →</button>
+    </div>
+  </div>
+</body>
+</html>

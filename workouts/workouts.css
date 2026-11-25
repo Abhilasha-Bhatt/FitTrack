@@ -1,0 +1,155 @@
+/* ===== WORKOUTS SPECIFIC STYLES ===== */
+
+.workouts-container {
+  padding: 0;
+}
+
+.videos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 24px;
+}
+
+.video-card {
+  background: var(--card);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  animation: slideUp 0.5s ease-out backwards;
+}
+
+.video-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--accent);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+}
+
+.video-thumbnail {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: #000;
+  overflow: hidden;
+}
+
+.video-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s;
+}
+
+.video-card:hover .video-thumbnail img {
+  transform: scale(1.05);
+}
+
+.play-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.2);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.play-icon::after {
+  content: '\f04b';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  font-size: 2rem;
+  color: var(--accent);
+  text-shadow: 0 0 20px rgba(200,255,0,0.5);
+}
+
+.video-card:hover .play-icon {
+  opacity: 1;
+}
+
+.video-card-info {
+  padding: 20px;
+}
+
+.video-card-type {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.video-card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #fff;
+}
+
+/* Music Cards */
+.music-grid {
+  margin-top: 20px;
+}
+
+.music-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  transition: all 0.2s;
+}
+
+.music-card:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: var(--accent);
+}
+
+.music-card.active {
+  background: rgba(200,255,0,0.05);
+  border-color: var(--accent);
+}
+
+.music-icon {
+  font-size: 1.5rem;
+  width: 44px;
+  height: 44px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.music-info h4 {
+  font-size: 0.9rem;
+  margin-bottom: 2px;
+}
+
+.music-bpm {
+  font-size: 0.7rem;
+  color: var(--text2);
+}
+
+/* Modal specific (if needed beyond dashboard.css) */
+.video-loader {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--accent);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
