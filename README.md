@@ -199,4 +199,4 @@ naya/
 
 ## License
 
-This project is provided for educational and personal use. Add a license file if you plan to distribute it publicly.
+This project is provided for educational and personal use.
